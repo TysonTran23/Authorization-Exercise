@@ -1,12 +1,28 @@
-{% extends 'base.html' %}
-{% block title %} {{user.username}} {% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %} {{user.username}} {% endblock %} {%
+block content %}
 <h2>WELCOME TO THE CHAMBER OF SECRETS!</h2>
 <h3>{{user.username}}</h3>
+<h6>
+  <form action="/users/{{user.username}}/delete" method="POST">
+    <button>Delete Account</button>
+  </form>
+</h6>
 <ul>
-    <li>Email: {{user.email}}</li>
-    <li>First Name: {{user.first_name}}</li>
-    <li>Last Name {{user.last_name}}</li>
+  <li>Email: {{user.email}}</li>
+  <li>First Name: {{user.first_name}}</li>
+  <li>Last Name {{user.last_name}}</li>
 </ul>
+<h2>Feedbacks</h2>
+<ul>
+  {% for feedback in user.feedback %}
+  <li>
+    {{feedback.title}} - {{feedback.content}}
+    <a href=""><button>Edit</button></a>
+    <a href=""><button>Delete</button></a>
+  </li>
+  {% endfor %}
+</ul>
+<a href="/users/{{user.username}}/feedback/add"
+  ><button>Add New Feedback</button></a
+>
 {% endblock %}
