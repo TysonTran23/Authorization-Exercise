@@ -17,7 +17,7 @@ block content %}
   {% for feedback in user.feedback %}
   <li>
     {{feedback.title}} - {{feedback.content}}
-    <a href=""><button>Edit</button></a>
+    <a href="/feedback/{{feedback.id}}/update"><button>Edit</button></a>
     <a href=""><button>Delete</button></a>
   </li>
   {% endfor %}

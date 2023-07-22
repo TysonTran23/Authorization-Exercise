@@ -1,7 +1,7 @@
 from flask import Flask, flash, redirect, render_template, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-from forms import AddFeedBackForm, LoginForm, RegisterForm
+from forms import FeedbackForm, LoginForm, RegisterForm
 from models import Feedback, User, connect_db, db
 
 app = Flask(__name__)
@@ -101,7 +101,7 @@ def add_feedback(username):
         flash("Please log in first!", "danger")
         return redirect("/login")
     
-    form = AddFeedBackForm()
+    form = FeedbackForm()
     
     if form.validate_on_submit():
         new_feedback = Feedback(
@@ -112,3 +112,24 @@ def add_feedback(username):
         return redirect(f"/users/{username}")
 
     return render_template("feedback_form.html", form=form)
+
+@app.route("/feedback/<int:feedback_id>/update", methods=["GET", "POST"])
+def update_feedback(feedback_id):
+
+    feedback = Feedback.query.get(feedback_id)
+
+    if "username" not in session or feedback.username != session["username"]:
+        flash("You don't have authorization for that action")
+        return redirect("/login")
+
+    form = FeedbackForm(obj=feedback)
+
+    if form.validate_on_submit():
+        feedback.title = form.title.data
+        feedback.content = form.content.data
+
+        db.session.commit()
+
+        return redirect(f"/users/{feedback.username}")
+
+    return render_template("edit_feedback.html", form=form, feedback=feedback)
