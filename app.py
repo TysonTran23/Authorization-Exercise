@@ -66,7 +66,7 @@ def secret_page(username):
     if "username" not in session or username != session["username"]:
         flash("Please Login First!", "danger")
         return redirect("/login")
-    
+
     user = User.query.get(username)
     feedbacks = Feedback.query.filter_by(username=username).all()
     return render_template("user_details.html", user=user, feedbacks=feedbacks)
@@ -81,7 +81,6 @@ def logout_user():
 
 @app.route("/users/<username>/delete", methods=["POST"])
 def delete_user(username):
-
     if "username" not in session or username != session["username"]:
         flash("You don't have access to delete this account")
         return redirect("/login")
@@ -100,9 +99,9 @@ def add_feedback(username):
     if "username" not in session or username != session["username"]:
         flash("Please log in first!", "danger")
         return redirect("/login")
-    
+
     form = FeedbackForm()
-    
+
     if form.validate_on_submit():
         new_feedback = Feedback(
             title=form.title.data, content=form.content.data, username=username
@@ -113,13 +112,13 @@ def add_feedback(username):
 
     return render_template("feedback_form.html", form=form)
 
+
 @app.route("/feedback/<int:feedback_id>/update", methods=["GET", "POST"])
 def update_feedback(feedback_id):
-
     feedback = Feedback.query.get(feedback_id)
 
     if "username" not in session or feedback.username != session["username"]:
-        flash("You don't have authorization for that action")
+        flash("You don't have authorization for that action", "danger")
         return redirect("/login")
 
     form = FeedbackForm(obj=feedback)
@@ -133,3 +132,15 @@ def update_feedback(feedback_id):
         return redirect(f"/users/{feedback.username}")
 
     return render_template("edit_feedback.html", form=form, feedback=feedback)
+
+
+@app.route("/feedback/<int:feedback_id>/delete", methods=["POST"])
+def delete_feedback(feedback_id):
+    feedback = Feedback.query.get(feedback_id)
+    if "username" not in session or feedback.username != session["username"]:
+        flash("You are not authorized to delete this feedback", "danger")
+        return redirect("/login")
+
+    db.session.delete(feedback)
+    db.session.commit()
+    return redirect(f"/users/{feedback.username}")

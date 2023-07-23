@@ -18,7 +18,9 @@ block content %}
   <li>
     {{feedback.title}} - {{feedback.content}}
     <a href="/feedback/{{feedback.id}}/update"><button>Edit</button></a>
-    <a href=""><button>Delete</button></a>
+    <form action="/feedback/{{feedback.id}}/delete" method="POST">
+      <button>Delete</button>
+    </form>
   </li>
   {% endfor %}
 </ul>
